@@ -1,0 +1,17 @@
+# ── Daemon image ─────────────────────────────────────────────
+# Lightweight Node.js image that runs the TypeScript daemon
+FROM node:20-alpine
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev && npm install tsx dotenv
+
+# Copy only what the daemon needs
+COPY src/daemon/ ./src/daemon/
+COPY src/lib/types.ts ./src/lib/types.ts
+COPY tsconfig.json ./
+
+ENV NODE_ENV=production
+
+# DATA_FILE and RPC_URL are set via k8s env vars
+CMD ["npx", "tsx", "src/daemon/index.ts"]

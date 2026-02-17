@@ -1,0 +1,74 @@
+# Epoch Day v2 – Frontend Deployment
+# Image: docker.io/nathandanielanderson/epoch-day:latest
+# Reads epochs.json from shared PVC (read-only)
+# Serves the Next.js app on port 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: epoch-day
+  namespace: epoch-day
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: epoch-day
+  template:
+    metadata:
+      labels:
+        app: epoch-day
+    spec:
+      imagePullSecrets:
+        - name: docker-pull-secret
+      securityContext:
+        runAsUser: 1000790000
+        runAsGroup: 1000790000
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: epoch-day-data
+          persistentVolumeClaim:
+            claimName: epoch-day-pvc-hdd
+      containers:
+        - name: web
+          image: docker.io/nathandanielanderson/epoch-day:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          env:
+            - name: PORT
+              value: "3000"
+            - name: HOSTNAME
+              value: "0.0.0.0"
+            # RPC_URL for live epoch queries (server-side only)
+            - name: RPC_URL
+              valueFrom:
+                secretKeyRef:
+                  name: helius-rpc
+                  key: url
+            # Legacy InfluxDB vars (keep if still used by other services)
+            - name: INFLUX_URL
+              value: "https://influxdb.apps.ra.latentfree.llc"
+            - name: INFLUX_DB
+              value: fd_metrics
+            - name: INFLUX_USER
+              valueFrom:
+                secretKeyRef:
+                  name: influx-auth
+                  key: username
+            - name: INFLUX_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: influx-auth
+                  key: password
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: epoch-day-data
+              mountPath: /data
+              readOnly: true

@@ -1,0 +1,54 @@
+# Epoch Day v2 – Daemon Deployment
+# Image: docker.io/nathandanielanderson/epoch-day-daemon:latest
+# Writes epochs.json to shared PVC (read-write)
+# Replaces the old alpine + configmap shell script approach
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: epoch-day-daemon
+  namespace: epoch-day
+spec:
+  replicas: 1    # Only ONE daemon instance should write to the PVC
+  selector:
+    matchLabels:
+      app: epoch-day-daemon
+  template:
+    metadata:
+      labels:
+        app: epoch-day-daemon
+    spec:
+      securityContext:
+        runAsUser: 1000790000
+        runAsGroup: 1000790000
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: epoch-day-data
+          persistentVolumeClaim:
+            claimName: epoch-day-pvc-hdd
+      containers:
+        - name: daemon
+          image: docker.io/nathandanielanderson/epoch-day-daemon:latest
+          imagePullPolicy: Always
+          env:
+            - name: DATA_FILE
+              value: /data/epochs.json
+            - name: CHECK_INTERVAL
+              value: "60"
+            - name: RPC_URL
+              valueFrom:
+                secretKeyRef:
+                  name: helius-rpc
+                  key: url
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: epoch-day-data
+              mountPath: /data
+      imagePullSecrets:
+        - name: docker-pull-secret
