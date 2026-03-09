@@ -180,10 +180,14 @@ export default function EpochDisplay() {
         console.log('[EpochDisplay] riveProgress (0–100):', riveProgress);
     }, [pct, riveProgress]);
 
-    // Hide the badge when it's the *current* epoch (has progress)
+    // Hide the badge when it's the *current* epoch (has progress > 0)
     const showProjectionBadge =
         !!data?.isProjection &&
-        !(data?.progressPercent != null && data.progressPercent < 100);
+        !(
+            data?.progressPercent != null &&
+            data.progressPercent > 0 &&
+            data.progressPercent < 100
+        );
 
     const dayTicks = useMemo(() => {
         if (!data?.epochStartMs || !data?.endTimeMs) return [];
@@ -293,7 +297,14 @@ export default function EpochDisplay() {
                 onChangeOffset={setOffsetMinutes}
             />
 
-            <ProgressBar pct={pct} avgSlotMs={avgSlotMs} dayTicks={dayTicks} />
+            <ProgressBar
+                pct={pct}
+                avgSlotMs={avgSlotMs}
+                dayTicks={dayTicks}
+                epochStartMs={data?.epochStartMs}
+                epochEndMs={data?.endTimeMs}
+                offsetMinutes={offsetMinutes}
+            />
 
             {/* Live countdown / projected end */}
             <div className="text-xs text-zinc-500">

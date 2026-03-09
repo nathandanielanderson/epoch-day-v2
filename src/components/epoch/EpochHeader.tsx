@@ -93,16 +93,10 @@ function EpochHeaderImpl({
                         ))}
                     </select>
                 </label>
-
-                {isProjection && (
-                    <span className="rounded-full bg-amber-500/15 text-amber-300 text-[10px] px-2 py-0.5">
-                        Projection
-                    </span>
-                )}
             </div>
 
             {/* Main row: arrows + large editable input + Now */}
-            <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center justify-center gap-2 relative">
                 <button
                     className="rounded-lg bg-zinc-900/50 p-2 hover:bg-zinc-800 text-zinc-300"
                     onClick={onPrev}
@@ -111,29 +105,37 @@ function EpochHeaderImpl({
                     <ChevronLeft size={18} />
                 </button>
 
-                {/* String input, mobile-friendly, Enter works */}
-                <input
-                    type="text"
-                    inputMode="text"
-                    enterKeyHint="go"
-                    value={epochInput}
-                    onChange={(e) => {
-                        const val = e.target.value.replace(/[^\d]/g, '');
-                        setEpochInput(val);
-                    }}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                            const n = parseInt(epochInput, 10);
-                            if (!Number.isNaN(n) && n >= 0) {
-                                onSubmit(n);
-                                e.currentTarget.blur(); // 👈 hides keyboard
+                <div className="relative">
+                    {/* String input, mobile-friendly, Enter works */}
+                    <input
+                        type="text"
+                        inputMode="text"
+                        enterKeyHint="go"
+                        value={epochInput}
+                        onChange={(e) => {
+                            const val = e.target.value.replace(/[^\d]/g, '');
+                            setEpochInput(val);
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                const n = parseInt(epochInput, 10);
+                                if (!Number.isNaN(n) && n >= 0) {
+                                    onSubmit(n);
+                                    e.currentTarget.blur(); // 👈 hides keyboard
+                                }
                             }
-                        }
-                    }}
-                    placeholder={epoch != null ? String(epoch) : 'epoch…'}
-                    className="w-44 text-center text-6xl font-semibold tracking-tight bg-transparent px-2 py-1 outline-none rounded-lg focus:ring-2 ring-zinc-700"
-                    aria-label="Epoch number"
-                />
+                        }}
+                        placeholder={epoch != null ? String(epoch) : 'epoch…'}
+                        className="w-44 text-center text-6xl font-semibold tracking-tight bg-transparent px-2 py-1 outline-none rounded-lg focus:ring-2 ring-zinc-700"
+                        aria-label="Epoch number"
+                    />
+
+                    {isProjection && (
+                        <div className="absolute -top-3 -right-6 rounded-full bg-amber-500/20 text-amber-300 text-[10px] px-2 py-0.5 border border-amber-500/30 font-medium tracking-wide">
+                            Projection
+                        </div>
+                    )}
+                </div>
 
                 <button
                     className="rounded-lg bg-zinc-900/50 p-2 hover:bg-zinc-800 text-zinc-300"

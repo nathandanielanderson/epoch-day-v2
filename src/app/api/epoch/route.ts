@@ -139,7 +139,7 @@ export async function GET(request: Request) {
             slotsInEpoch: liveInfo.slotsInEpoch,
             slotIndex: liveInfo.slotIndex,
             absoluteSlot: liveInfo.absoluteSlot,
-            progressPercent: liveInfo.progress,
+            progressPercent: liveInfo.progress * 100,
             epochStartMs: startMs,
             endTimeMs: endMs,
             remainingMs,
