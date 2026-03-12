@@ -159,37 +159,39 @@ export default function CalendarGrid({ currentDate, offsetMinutes, epochs, event
                                         </div>
 
                                         {/* Hover Tooltip / Details Card */}
-                                        <div className="absolute left-1/2 top-full mt-1 -translate-x-1/2 w-48 bg-zinc-800 border border-zinc-600 rounded-lg shadow-2xl z-[100] opacity-0 group-hover/event:opacity-100 pointer-events-none group-hover/event:pointer-events-auto transition-opacity duration-200">
-                                            <div className="p-3">
-                                                <div className="flex items-center gap-2 mb-2">
-                                                    <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: evObj.color || '#3b82f6' }} />
-                                                    <h4 className="text-zinc-100 font-semibold text-xs leading-snug">{evObj.title}</h4>
-                                                </div>
-                                                {evObj.description && (
-                                                    <p className="text-zinc-400 text-[10px] mb-3 leading-relaxed">
-                                                        {evObj.description}
-                                                    </p>
-                                                )}
-                                                <div className="text-[10px] text-zinc-500 mb-3 font-mono bg-black/30 p-1.5 rounded">
-                                                    {evObj.epoch ? (
-                                                        <div>Epoch: {evObj.epoch}</div>
-                                                    ) : evObj.date ? (
-                                                        <div>Date: {evObj.date}</div>
-                                                    ) : (
-                                                        <>
-                                                            <div>From: {formatDayAndTimeWithOffset(evObj.start_time_unix * 1000, offsetMinutes)}</div>
-                                                            <div>To: {formatDayAndTimeWithOffset(evObj.end_time_unix * 1000, offsetMinutes)}</div>
-                                                        </>
+                                        <div className="absolute left-1/2 top-full -translate-x-1/2 w-48 pt-2 z-[100] opacity-0 group-hover/event:opacity-100 pointer-events-none group-hover/event:pointer-events-auto transition-opacity duration-200">
+                                            <div className="bg-zinc-800 border border-zinc-600 rounded-lg shadow-2xl">
+                                                <div className="p-3">
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: evObj.color || '#3b82f6' }} />
+                                                        <h4 className="text-zinc-100 font-semibold text-xs leading-snug">{evObj.title}</h4>
+                                                    </div>
+                                                    {evObj.description && (
+                                                        <p className="text-zinc-400 text-[10px] mb-3 leading-relaxed">
+                                                            {evObj.description}
+                                                        </p>
                                                     )}
+                                                    <div className="text-[10px] text-zinc-500 mb-3 font-mono bg-black/30 p-1.5 rounded">
+                                                        {evObj.epoch ? (
+                                                            <div>Epoch: {evObj.epoch}</div>
+                                                        ) : evObj.date ? (
+                                                            <div>Date: {evObj.date}</div>
+                                                        ) : (
+                                                            <>
+                                                                <div>From: {formatDayAndTimeWithOffset(evObj.start_time_unix * 1000, offsetMinutes)}</div>
+                                                                <div>To: {formatDayAndTimeWithOffset(evObj.end_time_unix * 1000, offsetMinutes)}</div>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                    <a
+                                                        href={generateGCalLink(evObj)}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="block w-full text-center bg-zinc-700 hover:bg-zinc-600 text-white text-[10px] py-1.5 rounded transition-colors font-medium border border-zinc-600"
+                                                    >
+                                                        + Add to Google Calendar
+                                                    </a>
                                                 </div>
-                                                <a
-                                                    href={generateGCalLink(evObj)}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="block w-full text-center bg-zinc-700 hover:bg-zinc-600 text-white text-[10px] py-1.5 rounded transition-colors font-medium border border-zinc-600"
-                                                >
-                                                    + Add to Google Calendar
-                                                </a>
                                             </div>
                                         </div>
                                     </div>
@@ -197,7 +199,7 @@ export default function CalendarGrid({ currentDate, offsetMinutes, epochs, event
                             </div>
 
                             {/* Epochs Container */}
-                            <div className={`absolute bottom-2 left-0 right-0 h-5 z-10 ${!dayObj.isCurrentMonth ? 'opacity-40' : ''}`}>
+                            < div className={`absolute bottom-2 left-0 right-0 h-5 z-10 ${!dayObj.isCurrentMonth ? 'opacity-40' : ''}`}>
                                 {dayEpochs.map(ep => {
                                     const eStart = ep.start_time_unix * 1000;
                                     const eEnd = ep.end_time_unix * 1000;
