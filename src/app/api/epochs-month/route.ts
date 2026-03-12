@@ -80,6 +80,14 @@ export async function GET(request: Request) {
                     liveEpochData.isCurrent = true;
                     if (liveEpochData.end_time_unix) {
                         currentEpochEndMs = liveEpochData.end_time_unix * 1000;
+                    } else {
+                        const remainingSlots = liveInfo.slotsInEpoch - liveInfo.slotIndex;
+                        const remainingMs = remainingSlots * avgSlotMs;
+                        currentEpochEndMs = Date.now() + remainingMs;
+                        liveEpochData.end_time_unix = Math.floor(currentEpochEndMs / 1000);
+                        if (!liveEpochData.start_time_unix) {
+                            liveEpochData.start_time_unix = Math.floor((Date.now() - (liveInfo.slotIndex * avgSlotMs)) / 1000);
+                        }
                     }
                 }
 
