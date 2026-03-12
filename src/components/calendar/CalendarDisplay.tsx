@@ -15,10 +15,13 @@ export interface CalendarEpoch {
     isProjection?: boolean;
 }
 
+import { CalendarEvent } from '@/lib/types';
+
 export default function CalendarDisplay() {
     const [currentDate, setCurrentDate] = useState<Date>(new Date());
     const [offsetMinutes, setOffsetMinutes] = useState<number>(0);
     const [epochs, setEpochs] = useState<CalendarEpoch[]>([]);
+    const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [globalCurrentEpoch, setGlobalCurrentEpoch] = useState<number | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -45,15 +48,18 @@ export default function CalendarDisplay() {
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth();
 
-        fetch(`/api/epochs-month?year=${year}&month=${month}`)
-            .then(res => res.json())
-            .then(data => {
-                if (active && Array.isArray(data)) {
-                    setEpochs(data);
+        Promise.all([
+            fetch(`/api/epochs-month?year=${year}&month=${month}`).then(res => res.json()),
+            fetch(`/api/events-month?year=${year}&month=${month}`).then(res => res.json())
+        ])
+            .then(([epochsData, eventsData]) => {
+                if (active) {
+                    if (Array.isArray(epochsData)) setEpochs(epochsData);
+                    if (Array.isArray(eventsData)) setEvents(eventsData);
                 }
             })
             .catch(err => {
-                console.error("Failed to fetch calendar epochs", err);
+                console.error("Failed to fetch calendar data", err);
             })
             .finally(() => {
                 if (active) setLoading(false);
@@ -101,6 +107,7 @@ export default function CalendarDisplay() {
                     currentDate={currentDate}
                     offsetMinutes={offsetMinutes}
                     epochs={epochs}
+                    events={events}
                 />
             )}
 

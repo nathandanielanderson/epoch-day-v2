@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1",
+    "title": "SFDP: Agave 3.1.10 Required",
+    "description": "Operators must run Agave 3.1.10 or Firedancer 0.814.30108 by start of this epoch.",
+    "epoch": 939,
+    "type": "upgrade",
+    "color": "#ef4444"
+  },
+  {
+    "id": "2",
+    "title": "Solana's 6th Birthday",
+    "description": "Happy birthday Solana!",
+    "date": "2026-03-16",
+    "type": "event",
+    "color": "#a855f7"
+  }
+]
